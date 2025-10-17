@@ -14,12 +14,12 @@ use Illuminate\Support\Facades\DB;
 
 class TrainingHistory extends Model
 {
-    use Filterable,
-        HasMeta,
-        HasFeatures,
-        HasCollectionSetup,
-        Searchable,
-        SoftDeletes;
+    use Filterable;
+    use HasMeta;
+    use HasFeatures;
+    use HasCollectionSetup;
+    use Searchable;
+    use SoftDeletes;
 
     /**
      * The connection name for the model.
@@ -64,19 +64,39 @@ class TrainingHistory extends Model
      * @param Request $request
      * @return void
      */
-    public static function storeRecord(Request $request)
+    public static function storeFromApi(Request $request)
     {
-        $model = new static;
-        
+        $model = new static();
+
+        $type = TrainingType::firstWhere('name', $request->diklat_jenis);
+        $cluster = TrainingCluster::firstWhere('name', $request->diklat_rumpun);
+        $register = TrainingRegister::firstWhere('name', $request->diklat_kompetensi);
+
         DB::connection($model->connection)->beginTransaction();
 
         try {
-            // ...
+            $model->name = $request->diklat_nama;
+            $model->slug = sha1(str($request->diklat_nama)->slug()->toString());
+            $model->biodata_id = $request->pegawai_nip;
+            $model->type_id = optional($type)->id;
+            $model->register_id = optional($register)->id;
+            $model->cluster_id = optional($cluster)->id;
+            $model->decree_number = $request->sertifikat_nomor;
+            $model->decree_date = $request->sertifikat_tanggal;
+            $model->decree_year = $request->sertifikat_tahun;
+            $model->start_date = $request->diklat_mulai;
+            $model->end_date = $request->diklat_selesai;
+            $model->number_of_hours = $request->diklat_jam;
+            $model->organizer = 'BPSDM';
+            $model->filepath = $request->file('sertifikat_file')->store($request->pegawai_nip, 'simceria');
             $model->save();
 
             DB::connection($model->connection)->commit();
 
-            // return new TrainingHistoryResource($model);
+            return response()->json([
+                'success' => true,
+                'message' => 'store data was success.'
+            ], 200);
         } catch (\Exception $e) {
             DB::connection($model->connection)->rollBack();
 

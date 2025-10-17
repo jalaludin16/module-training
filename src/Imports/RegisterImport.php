@@ -39,7 +39,7 @@ class RegisterImport implements ToCollection, WithHeadingRow
             $source = (object) $row->toArray();
 
             $model = new TrainingRegister();
-            $model->name = $source->name;
+            $model->name = str($source->name)->upper()->trim()->toString();
             $model->slug = sha1(str($source->name)->slug()->toString());
             $model->type_id = $source->type_id;
             $model->datamap = optional($source)->datamap ?: null;

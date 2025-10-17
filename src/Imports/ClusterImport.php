@@ -39,7 +39,7 @@ class ClusterImport implements ToCollection, WithHeadingRow
             $source = (object) $row->toArray();
 
             $model = new TrainingCluster();
-            $model->name = $source->name;
+            $model->name = str($source->name)->upper()->trim()->toString();
             $model->slug = sha1(str($source->name)->slug()->toString());
             $model->save();
         }

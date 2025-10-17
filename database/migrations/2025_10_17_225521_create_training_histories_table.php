@@ -20,17 +20,17 @@ return new class () extends Migration {
             $table->foreignId('type_id');
             $table->foreignId('register_id');
             $table->foreignId('cluster_id')->nullable();
-
             $table->text('decree_number')->nullable()->index();
             $table->date('decree_date')->nullable()->index();
             $table->unsignedInteger('decree_year')->nullable()->index();
-
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
             $table->unsignedInteger('number_of_hours')->default(0);
             $table->text('organizer')->nullable();
-
+            $table->text('filepath');
             $table->jsonb('meta')->nullable();
+            $table->timestamp('validated_at')->nullable();
+            $table->foreignId('validated_by')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
