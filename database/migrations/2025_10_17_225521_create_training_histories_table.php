@@ -18,6 +18,7 @@ return new class () extends Migration {
             $table->text('slug')->unique();
             $table->string('biodata_id', 18)->index()->nullable();
             $table->foreignId('type_id');
+            $table->foreignId('register_id');
             $table->foreignId('cluster_id')->nullable();
 
             $table->text('decree_number')->nullable()->index();
@@ -29,7 +30,6 @@ return new class () extends Migration {
             $table->unsignedInteger('number_of_hours')->default(0);
             $table->text('organizer')->nullable();
 
-            $table->morphs('trainable');
             $table->jsonb('meta')->nullable();
             $table->softDeletes();
             $table->timestamps();

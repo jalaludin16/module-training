@@ -2,44 +2,46 @@
 
 namespace Module\Training\Imports;
 
-use Illuminate\Support\Collection;
-use Maatwebsite\Excel\Concerns\ToCollection;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
+use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
-class DataImport implements ToCollection, WithHeadingRow
+class DataImport implements WithMultipleSheets, WithChunkReading
 {
-    /**
-     * the module has role table
-     */
-    protected $command;
-
     /**
      * Undocumented function
      *
      * @param [type] $command
      * @param string $mode
      */
-    public function __construct($command)
+    public function __construct(protected $command, protected array $sheets = [])
     {
-        $this->command = $command;
     }
 
     /**
-     * @param Collection $collection
+     * Undocumented function
+     *
+     * @return integer
      */
-    public function collection(Collection $rows)
+    public function chunkSize(): int
     {
-        $this->command->info('models_table');
-        $this->command->getOutput()->progressStart(count($rows));
+        return 500;
+    }
 
-        foreach ($rows as $row) {
-            $this->command->getOutput()->progressAdvance();
-
-            $model = new Model();
-            $model->name = $row['name'];
-            $model->save();
+    /**
+     * Undocumented function
+     *
+     * @return array
+     */
+    public function sheets(): array
+    {
+        if ($this->sheets && count($this->sheets) > 0) {
+            return $this->sheets;
         }
 
-        $this->command->getOutput()->progressFinish();
+        return [
+            'types' => new TypeImport($this->command),
+            'clusters' => new ClusterImport($this->command),
+            'registers' => new RegisterImport($this->command),
+        ];
     }
 }

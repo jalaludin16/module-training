@@ -5,6 +5,7 @@ namespace Module\Training\Imports;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Module\Training\Models\TrainingType;
 
 class TypeImport implements ToCollection, WithHeadingRow
 {
@@ -29,14 +30,17 @@ class TypeImport implements ToCollection, WithHeadingRow
      */
     public function collection(Collection $rows)
     {
-        $this->command->info('models_table');
+        $this->command->info('types_table');
         $this->command->getOutput()->progressStart(count($rows));
 
         foreach ($rows as $row) {
             $this->command->getOutput()->progressAdvance();
 
-            $model = new Model();
-            $model->name = $row['name'];
+            $source = (object) $row->toArray();
+
+            $model = new TrainingType();
+            $model->name = $source->name;
+            $model->slug = sha1(str($source->name)->slug()->toString());
             $model->save();
         }
 
