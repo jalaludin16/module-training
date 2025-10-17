@@ -1,0 +1,12 @@
+{
+    "author_email": "monoland.soft@gmail.com",
+    "author_name": "Monoland",
+    "author_vendor": "monoland",
+    "module_connection": "platform",
+    "module_name": "Training",
+    "module_namespace": "Module",
+    "module_slug": "module-training",
+    "module_priority": 0,
+    "module_status": true,
+    "providers": "Module\\Training\\Providers\\TrainingServiceProvider"   
+}
