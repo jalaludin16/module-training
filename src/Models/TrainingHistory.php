@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class TrainingHistory extends Model
 {
@@ -68,6 +69,10 @@ class TrainingHistory extends Model
     {
         if (! $model = static::firstWhere('decree_number', $request->sertifikat_nomor)) {
             $model = new static();
+        } else {
+            if ($model->filepath && Storage::disk('simceria')->exists($model->filepath)) {
+                Storage::disk('simceria')->delete($model->filepath);
+            }
         }
 
         $type = TrainingType::firstWhere('name', $request->diklat_jenis);
