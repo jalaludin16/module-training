@@ -66,7 +66,9 @@ class TrainingHistory extends Model
      */
     public static function storeFromApi(Request $request)
     {
-        $model = new static();
+        if (! $model = static::firstWhere('decree_number', $request->sertifikat_nomor)) {
+            $model = new static();
+        }
 
         $type = TrainingType::firstWhere('name', $request->diklat_jenis);
         $cluster = TrainingCluster::firstWhere('name', $request->diklat_rumpun);
