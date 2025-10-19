@@ -102,7 +102,10 @@ class TrainingHistory extends Model
      */
     public static function storeFromApi(Request $request)
     {
-        if (! $model = static::firstWhere('decree_number', $request->sertifikat_nomor)) {
+        if (! $model = static::where('biodata_id', $request->pegawai_nip)
+            ->where('decree_number', $request->sertifikat_nomor)
+            ->first()
+        ) {
             $model = new static();
         } else {
             if ($model->filepath && Storage::disk('simceria')->exists($model->filepath)) {
@@ -118,7 +121,7 @@ class TrainingHistory extends Model
 
         try {
             $model->name = $request->diklat_nama;
-            $model->slug = sha1(str($request->diklat_nama)->slug()->toString());
+            $model->slug = sha1(str($request->pegawai_nip . ' ' . $request->sertifikat_nomor)->slug()->toString());
             $model->biodata_id = $request->pegawai_nip;
             $model->type_id = optional($type)->id;
             $model->register_id = optional($register)->id;
