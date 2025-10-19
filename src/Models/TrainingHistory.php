@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Traits\HasCollectionSetup;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -60,7 +61,22 @@ class TrainingHistory extends Model
     protected $defaultOrder = 'name';
 
     /**
-     * Undocumented function
+     * pageCombos function
+     *
+     * @param Request $request
+     * @return array
+     */
+    public static function pageCombos(Request $request): array
+    {
+        return [
+            'clusters' => TrainingCluster::forCombo(),
+            'registers' => TrainingRegister::forCombo(),
+            'types' => TrainingType::forCombo(),
+        ];
+    }
+
+    /**
+     * pageHeaders function
      *
      * @param Request $request
      * @return array
@@ -77,7 +93,7 @@ class TrainingHistory extends Model
     }
 
     /**
-     * Undocumented function
+     * pageResourceMap function
      *
      * @param Request $request
      * @return array
@@ -92,6 +108,74 @@ class TrainingHistory extends Model
             'number_of_hours' => $model->number_of_hours,
             'updated_at' => (string) $model->updated_at,
         ];
+    }
+
+    /**
+     * pageShowResourceMap function
+     *
+     * @param Request $request
+     * @return array
+     */
+    public static function pageShowResourceMap(Request $request, $model): array
+    {
+        return [
+            'id' => $model->id,
+            'name' => $model->name,
+            'biodata_id' => $model->biodata_id,
+            'cluster_id' => $model->cluster_id,
+            'cluster' => [
+                'text' => optional($model->cluster)->name,
+                'value' => $model->cluster_id,
+            ],
+            'register_id' => $model->register_id,
+            'register' => [
+                'text' => optional($model->register)->name,
+                'value' => $model->register_id,
+            ],
+            'type_id' => $model->type_id,
+            'type' => [
+                'text' => optional($model->type)->name,
+                'value' => $model->type_id,
+            ],
+            'decree_number' => $model->decree_number,
+            'decree_date' => $model->decree_date,
+            'decree_year' => $model->decree_year,
+            'number_of_hours' => $model->number_of_hours,
+            'start_date' => $model->start_date,
+            'end_date' => $model->end_date,
+            'organizer' => $model->organizer,
+            'filepath' => $model->filepath,
+        ];
+    }
+
+    /**
+     * cluster function
+     *
+     * @return BelongsTo
+     */
+    public function cluster(): BelongsTo
+    {
+        return $this->belongsTo(TrainingCluster::class, 'cluster_id');
+    }
+
+    /**
+     * register function
+     *
+     * @return BelongsTo
+     */
+    public function register(): BelongsTo
+    {
+        return $this->belongsTo(TrainingRegister::class, 'register_id');
+    }
+
+    /**
+     * type function
+     *
+     * @return BelongsTo
+     */
+    public function type(): BelongsTo
+    {
+        return $this->belongsTo(TrainingType::class, 'type_id');
     }
 
     /**
