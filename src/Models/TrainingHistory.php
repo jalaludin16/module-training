@@ -2,16 +2,16 @@
 
 namespace Module\Training\Models;
 
-use App\Traits\Filterable;
-use App\Traits\HasCollectionSetup;
-use App\Traits\HasFeatures;
 use App\Traits\HasMeta;
+use App\Traits\Filterable;
 use App\Traits\Searchable;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Traits\HasFeatures;
 use Illuminate\Http\Request;
+use App\Traits\HasCollectionSetup;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TrainingHistory extends Model
 {
@@ -58,6 +58,41 @@ class TrainingHistory extends Model
      * @var string
      */
     protected $defaultOrder = 'name';
+
+    /**
+     * Undocumented function
+     *
+     * @param Request $request
+     * @return array
+     */
+    public static function pageHeaders(Request $request): array
+    {
+        return [
+            ['text' => 'Name', 'value' => 'name'],
+            ['text' => 'Tahun', 'value' => 'decree_year'],
+            ['text' => 'Nomor', 'value' => 'decree_number'],
+            ['text' => 'Jam', 'value' => 'number_of_hours'],
+            ['text' => 'Updated', 'value' => 'updated_at', 'class' => 'field-datetime'],
+        ];
+    }
+
+    /**
+     * Undocumented function
+     *
+     * @param Request $request
+     * @return array
+     */
+    public static function pageResourceMap(Request $request, $model): array
+    {
+        return [
+            'id' => $model->id,
+            'name' => $model->name,
+            'decree_number' => $model->decree_number,
+            'decree_year' => $model->decree_year,
+            'number_of_hours' => $model->number_of_hours,
+            'updated_at' => (string) $model->updated_at,
+        ];
+    }
 
     /**
      * The model store method
