@@ -147,6 +147,7 @@ class TrainingHistory extends Model
             'start_date' => $model->start_date,
             'end_date' => $model->end_date,
             'organizer' => $model->organizer,
+            'fileuri' => config('app.url') . '/document/api/filesrc',
             'filepath' => $model->filepath,
             'validated' => !is_null($model->validated_at)
         ];
