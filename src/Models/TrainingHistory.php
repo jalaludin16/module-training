@@ -10,9 +10,10 @@ use Illuminate\Http\Request;
 use App\Traits\HasCollectionSetup;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Module\Profile\Models\ProfileCourse;
 
 class TrainingHistory extends Model
 {
@@ -85,9 +86,10 @@ class TrainingHistory extends Model
     {
         return [
             ['text' => 'Name', 'value' => 'name'],
-            ['text' => 'Tahun', 'value' => 'decree_year'],
+            ['text' => 'Tahun', 'value' => 'decree_year', 'align' => 'center', 'sortable' => false],
             ['text' => 'Nomor', 'value' => 'decree_number'],
-            ['text' => 'Jam', 'value' => 'number_of_hours'],
+            ['text' => 'Jam', 'value' => 'number_of_hours', 'align' => 'center', 'sortable' => false],
+            ['text' => 'Validate', 'value' => 'validated', 'align' => 'center', 'sortable' => false, 'mode' => 'icon'],
             ['text' => 'Updated', 'value' => 'updated_at', 'class' => 'field-datetime'],
         ];
     }
@@ -106,6 +108,7 @@ class TrainingHistory extends Model
             'decree_number' => $model->decree_number,
             'decree_year' => $model->decree_year,
             'number_of_hours' => $model->number_of_hours,
+            'validated' => is_null($model->validated_at) ? 'check_box_outline_blank' : 'check_box',
             'updated_at' => (string) $model->updated_at,
         ];
     }
@@ -145,6 +148,7 @@ class TrainingHistory extends Model
             'end_date' => $model->end_date,
             'organizer' => $model->organizer,
             'filepath' => $model->filepath,
+            'validated' => !is_null($model->validated_at)
         ];
     }
 
@@ -261,6 +265,30 @@ class TrainingHistory extends Model
                 'success' => false,
                 'message' => $e->getMessage()
             ], 500);
+        }
+    }
+
+    /**
+     * validateRecord function
+     *
+     * @param Request $request
+     * @param [type] $model
+     * @return void
+     */
+    public static function validateRecord(Request $request, $model, $parent)
+    {
+        if (!$course = $parent->courses()
+            ->where('biodata_id', $parent->nip)
+            ->where('decree_number', $model->decree_number)
+            ->first()
+        ) {
+            return ProfileCourse::storeFromApi($model, function () use ($model) {
+                //
+            });
+        } else {
+            return ProfileCourse::updateFromApi($course, $model, function () use ($model) {
+                //
+            });
         }
     }
 
