@@ -18,7 +18,7 @@ class TrainingHistoryPolicy
      */
     public function before(User $user, $ability)
     {
-        if ($user->name === 'superadmin') {
+        if ($user->name === 'superadmin' || $user->hasAbility('profile-administrator')) {
             return true;
         }
     }

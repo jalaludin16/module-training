@@ -282,12 +282,16 @@ class TrainingHistory extends Model
             ->where('decree_number', $model->decree_number)
             ->first()
         ) {
-            return ProfileCourse::storeFromApi($model, function () use ($model) {
-                //
+            return ProfileCourse::storeFromApi($model, function () use ($model, $request) {
+                $model->validated_at = now();
+                $model->validated_by = $request->user()->id;
+                $model->save();
             });
         } else {
-            return ProfileCourse::updateFromApi($course, $model, function () use ($model) {
-                //
+            return ProfileCourse::updateFromApi($course, $model, function () use ($model, $request) {
+                $model->validated_at = now();
+                $model->validated_by = $request->user()->id;
+                $model->save();
             });
         }
     }
